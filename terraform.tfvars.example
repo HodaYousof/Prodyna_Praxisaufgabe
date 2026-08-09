@@ -1,0 +1,8 @@
+# Copy to terraform.tfvars and adjust values.
+# terraform.tfvars is gitignored (local/env-specific).
+
+resource_group_name      = "RG-Hoda-Yousof"
+subnet_aks_address       = ["10.0.1.0/24"]
+subnet_endpoints_address = ["10.0.2.0/24"]
+# environment = "dev"
+# location    = "westeurope"
