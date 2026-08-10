@@ -163,7 +163,58 @@ Die Terraform-Konfiguration verwendet eine bereits vorhandene Azure Resource Gro
 
 Key Vault und Storage Account werden über Private Endpoints erreichbar gemacht. Private DNS Zones sorgen dafür, dass die Azure-Dienste innerhalb des VNets auf ihre privaten IP-Adressen aufgelöst werden.
 
-flowchart TB %% ========================================================= %% TERRAFORM %% ========================================================= TF["Terraform"] BACKEND["Terraform Backend<br/>Storage Account: stprodynaterraform<br/>Container: tfstate<br/>State: prodyna-dev.tfstate"] TF -. "State lesen / speichern" .-> BACKEND %% ========================================================= %% EXISTING RESOURCE GROUP %% ========================================================= subgraph RG["Existing Resource Group: RG-Hoda-Yousof"] direction TB %% ===================================================== %% NETWORK %% ===================================================== subgraph VNET["Virtual Network: vnet-prodyna-dev"] direction LR subgraph AKSNET["AKS Subnet<br/>snet-aks-prodyna-dev"] AKS["AKS Cluster<br/>aks-prodyna-dev"] NODEPOOL["System Node Pool<br/>Standard_B2s_v2<br/>1 Node"] AKS --> NODEPOOL end subgraph PENET["Private Endpoint Subnet<br/>snet-endpoints-prodyna-dev"] NSG["Network Security Group<br/>nsg-prodyna-dev"] PEKV["Private Endpoint<br/>Key Vault"] PEST["Private Endpoint<br/>Storage Blob"] end end %% ===================================================== %% AZURE SERVICES %% ===================================================== subgraph SERVICES["Private Azure Services"] direction LR KV["Key Vault<br/>kv-prodyna-dev<br/>RBAC enabled"] STORAGE["Storage Account<br/>stprodynadev<br/>Blob"] end %% ===================================================== %% PRIVATE DNS %% ===================================================== subgraph DNS["Private DNS"] direction LR DNSKV["Private DNS Zone<br/>privatelink.vaultcore.azure.net"] DNSST["Private DNS Zone<br/>privatelink.blob.core.windows.net"] end %% ===================================================== %% NETWORK CONNECTIONS %% ===================================================== NSG -->|"NSG Association"| PENET PEKV -->|"private_connection_resource_id<br/>azurerm_key_vault.main.id"| KV PEST -->|"private_connection_resource_id<br/>azurerm_storage_account.main.id"| STORAGE %% ===================================================== %% DNS ZONE GROUPS %% ===================================================== PEKV -.->|"private_dns_zone_ids"| DNSKV PEST -.->|"private_dns_zone_ids"| DNSST %% ===================================================== %% VNET DNS LINKS %% ===================================================== DNSKV -.->|"Virtual Network Link"| VNET DNSST -.->|"Virtual Network Link"| VNET %% ===================================================== %% RBAC %% ===================================================== AKS -.->|"Managed Identity<br/>Key Vault Secrets User"| KV ADMIN["Terraform User<br/>azurerm_client_config.current"] ADMIN -.->|"Key Vault Administrator"| KV end %% ========================================================= %% TERRAFORM -> RESOURCE GROUP %% ========================================================= TF -->|"data.azurerm_resource_group.main"| RG
+```mermaid
+flowchart TB
+
+    TF["Terraform"]
+    BACKEND["Terraform Backend<br/>Storage Account: stprodynaterraform<br/>Container: tfstate<br/>State: prodyna-dev.tfstate"]
+
+    TF -. "State lesen / speichern" .-> BACKEND
+    TF -->|"data.azurerm_resource_group.main"| RG
+
+    subgraph RG["Existing Resource Group: RG-Hoda-Yousof"]
+        direction TB
+
+        subgraph VNET["Virtual Network: vnet-prodyna-dev"]
+            direction LR
+
+            subgraph AKSNET["AKS Subnet<br/>snet-aks-prodyna-dev"]
+                AKS["AKS Cluster<br/>aks-prodyna-dev"]
+                NODEPOOL["System Node Pool<br/>Standard_B2s_v2<br/>1 Node"]
+                AKS --> NODEPOOL
+            end
+
+            subgraph PENET["Private Endpoint Subnet<br/>snet-endpoints-prodyna-dev"]
+                NSG["Network Security Group<br/>nsg-prodyna-dev"]
+                PEKV["Private Endpoint<br/>Key Vault"]
+                PEST["Private Endpoint<br/>Storage Blob"]
+            end
+        end
+
+        subgraph SERVICES["Private Azure Services"]
+            direction LR
+            KV["Key Vault<br/>kv-prodyna-dev<br/>RBAC enabled"]
+            STORAGE["Storage Account<br/>stprodynadev<br/>Blob"]
+        end
+
+        subgraph DNS["Private DNS"]
+            direction LR
+            DNSKV["Private DNS Zone<br/>privatelink.vaultcore.azure.net"]
+            DNSST["Private DNS Zone<br/>privatelink.blob.core.windows.net"]
+        end
+
+        NSG -->|"NSG Association"| PENET
+        PEKV -->|"private_connection_resource_id"| KV
+        PEST -->|"private_connection_resource_id"| STORAGE
+        PEKV -.->|"private_dns_zone_ids"| DNSKV
+        PEST -.->|"private_dns_zone_ids"| DNSST
+        DNSKV -.->|"Virtual Network Link"| VNET
+        DNSST -.->|"Virtual Network Link"| VNET
+        AKS -.->|"Managed Identity<br/>Key Vault Secrets User"| KV
+        ADMIN["Terraform User<br/>azurerm_client_config.current"]
+        ADMIN -.->|"Key Vault Administrator"| KV
+    end
+```
 
 ## Ressourcenstruktur
 
