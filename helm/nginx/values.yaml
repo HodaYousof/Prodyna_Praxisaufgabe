@@ -12,5 +12,11 @@ service:
   type: ClusterIP
   port: 80
 
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
+
 resources: {}
 # Staging oft ohne Limits; Production setzt Requests/Limits in values-production.yaml
