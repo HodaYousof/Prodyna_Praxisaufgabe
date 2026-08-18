@@ -1,0 +1,33 @@
+name: CI 
+
+on: 
+  push: 
+    branches: [ main ]
+  pull_request: 
+    branches: [ main ]
+
+jobs: 
+  terraform: 
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: hashicorp/setup-terraform@v3 
+      with: 
+        terraform_version: "1.11.4"
+
+    - run: terraform fmt -check -recursive
+    - run: terraform init -backend=false
+    - run: terraform validate
+    
+  helm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+        with:
+          version: v3.14.0
+      - run: helm lint ./helm/nginx
+      - run: helm template nginx-staging ./helm/nginx -f ./helm/nginx/values-staging.yaml
+      - run: helm template nginx-prod ./helm/nginx -f ./helm/nginx/values-production.yaml
+          
