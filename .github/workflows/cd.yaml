@@ -36,9 +36,11 @@ jobs:
           terraform_version: "1.11.4"
 
       - name: Terraform init
+        working-directory: infrastructure
         run: terraform init
 
       - name: Terraform apply
+        working-directory: infrastructure
         run: terraform apply -auto-approve -no-color
         env:
           TF_VAR_resource_group_name: RG-Hoda-Yousof

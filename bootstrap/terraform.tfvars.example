@@ -1,0 +1,5 @@
+# Copy to terraform.tfvars (gitignored) if you need to re-run bootstrap.
+resource_group_name  = "RG-Hoda-Yousof"
+# location             = "westeurope"
+# storage_account_name = "stprodynaterraform"
+# container_name       = "tfstate"
