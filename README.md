@@ -111,8 +111,6 @@ flowchart TB
   end
 ```
 
-**Merksatz:** Endpoint = Tür · DNS = Telefonbuch · RBAC = Ausweis.
-
 ---
 
 ## CI / CD
