@@ -1,0 +1,16 @@
+# Shared defaults — Stages überschreiben nur Unterschiede.
+namespace: staging
+
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: "1.27.3" # versioniert statt floating :latest / :stable
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources: {}
+# Staging oft ohne Limits; Production setzt Requests/Limits in values-production.yaml

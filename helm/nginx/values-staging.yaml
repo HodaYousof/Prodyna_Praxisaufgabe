@@ -1,0 +1,2 @@
+namespace: staging
+# replicaCount / image / resources kommen aus values.yaml
