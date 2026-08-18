@@ -18,5 +18,11 @@ strategy:
     maxUnavailable: 0
     maxSurge: 1
 
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 70
+
 resources: {}
 # Staging oft ohne Limits; Production setzt Requests/Limits in values-production.yaml

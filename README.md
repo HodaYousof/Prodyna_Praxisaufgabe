@@ -128,7 +128,8 @@ CD ist vorbereitet. App Registration / Federated Credential war in der Candidate
 
 ### Helm (nginx)
 
-Chart unter `helm/nginx/`: Defaults in `values.yaml`, Overrides in `values-staging.yaml` / `values-production.yaml` (Namespace, Replicas, Resources).
+Chart unter `helm/nginx/`: Defaults in `values.yaml`, Overrides in `values-staging.yaml` / `values-production.yaml` (Namespace, Replicas, Resources, RollingUpdate).  
+Production: HPA an (min 2 / max 5, CPU 70%); Staging: HPA aus, feste Replica.
 
 ### Secret Sync (Konzept)
 
